@@ -47,6 +47,7 @@ Start the FastAPI app (run from the repository root):
 ```powershell
 uvicorn backend.main:app --reload --port 8000
 ```
+***make sure to add to the url "/docs", for example "http://127.0.0.1:8000/docs"***
 
 Endpoints you can try now
 -------------------------
