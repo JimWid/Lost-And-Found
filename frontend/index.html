@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Lost & Found system for campus - Report and find lost items">
+    <meta name="keywords" content="lost, found, campus, items, university">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saint Peter's Lost and Found</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="peacock-emoji">🦚</div>
+        <h1>Saint Peter's Lost and Found</h1>
+        <p>Help reunite lost items with their owners on campus</p>
+    </header>
+
+    <main role="main">
+        <section id="upload-section" aria-labelledby="upload-heading">
+            <h2 id="upload-heading">Report a Found Item</h2>
+            <form id="upload-form" aria-describedby="upload-instructions">
+                <p id="upload-instructions" class="sr-only">Upload an image of a found item and optionally specify the location where it was found.</p>
+                <div class="form-group">
+                    <label for="image-upload">Upload Image:</label>
+                    <input type="file" id="image-upload" accept="image/*" required aria-describedby="image-help">
+                    <span id="image-help" class="sr-only">Select an image file of the found item</span>
+                </div>
+                <div class="form-group">
+                    <label for="location">Found Location (optional):</label>
+                    <input type="text" id="location" placeholder="e.g., Library, Cafeteria" aria-describedby="location-help">
+                    <span id="location-help" class="sr-only">Enter the location where the item was found</span>
+                </div>
+                <button type="submit" id="submit-btn" aria-describedby="submit-help">Submit Item</button>
+                <span id="submit-help" class="sr-only">Click to submit the found item</span>
+            </form>
+            <div id="upload-status" role="status" aria-live="polite"></div>
+        </section>
+
+        <section id="items-section" aria-labelledby="items-heading">
+            <h2 id="items-heading">Recent Found Items</h2>
+            <div id="items-list" role="list" aria-label="List of found items">
+                <!-- Items will be loaded here -->
+            </div>
+            <button id="load-more-btn" style="display: none;" aria-describedby="load-more-help">Load More Items</button>
+            <span id="load-more-help" class="sr-only">Load additional found items</span>
+        </section>
+    </main>
+
+    <footer role="contentinfo">
+        <p>&copy; 2025 Saint Peter's University Lost & Found System</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

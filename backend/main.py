@@ -40,26 +40,33 @@ async def create_lost_item(
         detection_confidence = None
 
     # Generates Captions (title and description)
-    inputs = processor(images=image, return_tensors="pt").to(device)
+    # The vision-language model may not be available (large weights). If it's
+    # not loaded, return placeholder text so the API is usable without the
+    # heavy model present.
+    if processor is None or model is None:
+        title = "(model not available)"
+        description = "The captioning model is not loaded on the server. Configure and load the BLIP2 model to enable automatic captions."
+    else:
+        inputs = processor(images=image, return_tensors="pt").to(device)
 
-    generated_title = model.generate(
-        **inputs, 
-        max_new_tokens=3, # Generates up to 3 tokens
-        min_new_tokens=2, # At least 2 tokens
-        num_beams=2,
-        length_penalty=1.0
-    )
+        generated_title = model.generate(
+            **inputs, 
+            max_new_tokens=3, # Generates up to 3 tokens
+            min_new_tokens=2, # At least 2 tokens
+            num_beams=2,
+            length_penalty=1.0
+        )
 
-    generated_description = model.generate(
-        **inputs, 
-        max_new_tokens=30, # Generates up to 50 tokens
-        min_new_tokens=15, # At least 30 tokens
-        num_beams=5,
-        length_penalty=1.2
-    )
-    
-    title = processor.decode(generated_title[0], skip_special_tokens=True)
-    description = processor.decode(generated_description[0], skip_special_tokens=True)
+        generated_description = model.generate(
+            **inputs, 
+            max_new_tokens=30, # Generates up to 50 tokens
+            min_new_tokens=15, # At least 30 tokens
+            num_beams=5,
+            length_penalty=1.2
+        )
+        
+        title = processor.decode(generated_title[0], skip_special_tokens=True)
+        description = processor.decode(generated_description[0], skip_special_tokens=True)
     
     db_item = LostItem(
         title=title,
