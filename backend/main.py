@@ -1,26 +1,45 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
 from PIL import Image
+from typing import Optional
 import torch
 import io
 from datetime import datetime
+from sqlalchemy.orm import Session
 
-from main import processor, model, device
+from main_model import processor, model, device
+from db import get_db
+from models import LostItem
+
+from yolo_detector import detect_object
+from categories import get_category_from_detection
 
 app = FastAPI()
 
-# Database test
-captions_db = {}
-caption_id_counter = 0
+@app.post("/create-lost-item")
+async def create_lost_item(
+    file: UploadFile = File(...),
+    foundLocation: Optional[str] = None,
+    db: Session = Depends(get_db)):
 
-@app.post("/generate-captions")
-async def generate_captions(file: UploadFile = File(...)):
-
-    global caption_id_counter
-
+    # Reads and process the image
     image_data = await file.read()
     image = Image.open(io.BytesIO(image_data))
 
-    # Generate Caption
+    # Detecting Object with YOLO
+    detection_result = detect_object(image)
+
+    if detection_result["detected"]:
+        category = get_category_from_detection(detection_result["class_name"], detection_result["confidence"])
+
+        detected_object = detection_result["class_name"]
+        detection_confidence = detection_result["confidence"]
+
+    else:
+        category = "Other"
+        detected_object = None
+        detection_confidence = None
+
+    # Generates Captions (title and description)
     inputs = processor(images=image, return_tensors="pt").to(device)
 
     generated_title = model.generate(
@@ -42,20 +61,41 @@ async def generate_captions(file: UploadFile = File(...)):
     title = processor.decode(generated_title[0], skip_special_tokens=True)
     description = processor.decode(generated_description[0], skip_special_tokens=True)
     
-    caption_id_counter += 1
-    captions_db[caption_id_counter] = {
-        "id": caption_id_counter,
-        "title": title,
-        "description": description,
-        "filename": file.filename,
-        "created_at": datetime.now().isoformat(),
+    db_item = LostItem(
+        title=title,
+        description=description,
+        category=category,
+        foundLocation=foundLocation
+    )
+
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+
+    return {
+        "id": db_item.id,
+        "title": db_item.title,
+        "description": db_item.description,
+        "category": db_item.category,
+        "foundLocation": db_item.foundLocation,
+        "addedAt": db_item.addedAt,
+        "confidence": detection_confidence,
+        "objectName": detected_object
     }
 
-    return captions_db[caption_id_counter]
-
-@app.get("/captions/{caption_id}")
-async def get_caption(caption_id: int):
-    if caption_id not in captions_db:
-        raise HTTPException(status_code=404, detail="Caption not found")
-    return captions_db[caption_id]
+@app.get("/lost-items/{item_id}")
+async def get_lost_item(item_id: int, db: Session = Depends(get_db)):
+    item = db.query(LostItem).filter(LostItem.id == item_id).first()
+    
+    if item is None:
+        raise HTTPException(status_code=404, detail="Lost item not found")
+    
+    return {
+        "id": item.id,
+        "title": item.title,
+        "description": item.description,
+        "category": item.category,
+        "foundLocation": item.foundLocation,
+        "addedAt": item.addedAt
+    }
 
