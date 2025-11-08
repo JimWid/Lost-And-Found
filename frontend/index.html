@@ -10,11 +10,38 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <header>
-        <div class="peacock-emoji">🦚</div>
+    <style>
+header {
+    display: flex;
+    align-items: center;      /* vertically centers image and text */
+    justify-content: center;  /* horizontally centers the text+image block */
+    position: relative;
+    padding: 20px;
+}
+
+.peacock-image {
+    position: absolute;       /* keeps image on the left side */
+    left: 20px;               /* adjust distance from left */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+header h1, header p {
+    text-align: center;       /* keeps text centered */
+    margin: 0;
+}
+</style>
+
+<header>
+    <div class="peacock-image">
+        <img src="spulogo.png" alt="Peacock image" width="350">
+    </div>
+
+    <div class="header-text">
         <h1>Saint Peter's Lost and Found</h1>
         <p>Help reunite lost items with their owners on campus</p>
-    </header>
+    </div>
+</header>
 
     <main role="main">
         <section id="upload-section" aria-labelledby="upload-heading">
