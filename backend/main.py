@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 from typing import Optional
 import torch
@@ -14,6 +15,15 @@ from yolo_detector import detect_object
 from categories import get_category_from_detection
 
 app = FastAPI()
+
+# Add CORS middleware to allow requests from frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/create-lost-item")
 async def create_lost_item(
@@ -72,7 +82,9 @@ async def create_lost_item(
         title=title,
         description=description,
         category=category,
-        foundLocation=foundLocation
+        foundLocation=foundLocation,
+        confidence=detection_confidence,
+        objectName=detected_object
     )
 
     db.add(db_item)
@@ -103,6 +115,8 @@ async def get_lost_item(item_id: int, db: Session = Depends(get_db)):
         "description": item.description,
         "category": item.category,
         "foundLocation": item.foundLocation,
-        "addedAt": item.addedAt
+        "addedAt": item.addedAt,
+        "confidence": item.confidence,
+        "objectName": item.objectName
     }
 

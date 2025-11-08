@@ -80,10 +80,13 @@ async function handleUpload(e) {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorText = await response.text();
+            console.error('Server response:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
         }
 
         const result = await response.json();
+        console.log('Upload result:', result);
         showStatus('Item uploaded successfully!', 'success');
         announceToScreenReader('Item uploaded successfully');
 
@@ -95,7 +98,7 @@ async function handleUpload(e) {
 
     } catch (error) {
         console.error('Upload error:', error);
-        showStatus('Failed to upload item. Please try again.', 'error');
+        showStatus(`Failed to upload item: ${error.message}`, 'error');
         announceToScreenReader('Upload failed. Please try again.');
     } finally {
         setLoading(false);
