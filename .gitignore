@@ -5,3 +5,9 @@ venv/
 # Ignore pychache
 __pycache__/
 *.pyc
+
+# Ignore database
+backend/lost_items.db
+
+# Ignores Yolo model
+backend/yolov8n.pt
