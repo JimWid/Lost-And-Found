@@ -42,9 +42,10 @@ git clone https://github.com/JimWid/Lost-And-Found.git
 Run the backend (quick try)
 ---------------------------
 
-Start the FastAPI app (run from the repository root):
-
+Start the FastAPI app:
+First go to backend folder:
 ```powershell
+cd backend
 uvicorn backend.main:app --reload --port 8000
 ```
 ***make sure to add to the url "/docs", for example "http://127.0.0.1:8000/docs"***
