@@ -1,13 +1,52 @@
-# Ignore .env
+# Python venvs
 venv/
-.env/
+.venv/
+*/venv/
+*/.venv/
 
-# Ignore pychache
+# Python cache / bytecode
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
-# Ignore database
-backend/lost_items.db
+# Runtime uploads / generated files
+backend/uploads/
+uploads/
 
-# Ignores Yolo model
+# Large model weights (do NOT commit; use Git LFS or download script)
 backend/yolov8n.pt
+*.pt
+
+# Backend build / packaging artifacts
+dist/
+build/
+*.egg-info/
+pip-wheel-metadata/
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+.next/
+frontend/.vercel/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.*
+frontend/.env.local
+frontend/.env.*
+
+# IDE / editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

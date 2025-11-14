@@ -1,5 +1,3 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
 
 CATEGORY_MAPPING = {
     # Electronics
@@ -16,13 +14,13 @@ CATEGORY_MAPPING = {
                          "tennis racket", "frisbee", "skis", "snowboard"],
     
     # Books & Stationery
-    "Books & Stationery": ["book", "scissors", "pen", "pencil"],
+    "Utils": ["book", "scissors", "pen", "pencil"],
     
     # Personal Items
-    "Personal Items": ["toothbrush", "hair drier", "bottle", "cup", "wine glass", "fork", "knife", "spoon"],
+    "Personal": ["toothbrush", "hair drier", "bottle", "cup", "wine glass", "fork", "knife", "spoon"],
     
     # Keys & Cards
-    "Keys & Cards": ["keys", "card"],
+    "Keys/Cards": ["keys", "card"],
     
     # Other (default)
     "Other": []

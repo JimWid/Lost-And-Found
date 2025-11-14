@@ -2,68 +2,97 @@
 
 Short summary
 ---------------
-This project is a "Lost & Found" website. It uses computer vision (YOLO) to detect objects in uploaded images and a text-generation model to automatically produce short titles and descriptions for found items. Detected items are saved to the database so they can be browsed, claimed, or reported by users via a the webiste.
+This repository contains full stack website (backend + frontend) for a "Lost & Found" website that helps list items found around campus/university. The backend uses YOLO for object detection and a vision-language model (BLIP) to auto-generate short titles and descriptions from item photos. Uploaded items are stored in the database with metadata (location, filename, generated captions (title + description), id) and can be listed, retrieved, or deleted.
 
-Future program vision
----------------------
-Our goal is to build a full website that helps students and faculty find and list lost items found across campus. Key features we plan to deliver:
+What this repository contains now (file structure)
+-------------------------------------------------
+- backend/
+  - main.py                — FastAPI app and endpoints
+  - main_model.py          — model & processor loader (BLIP-2) and device setup
+  - yolo_detector.py       — YOLO wrapper for local detection
+  - models.py              — SQLAlchemy model(s) (LostItem)
+  - schemas.py             — Pydantic schemas (CreateLostItem)
+  - db.py                  — DB session helper (get_db)
+  - requirements.txt       — Python dependencies
+- frontend/            	   — Next/js app
+  - src/
+  	- app/
+	  - main.tsx		   		   — Main page / Hero page
+	  - report-item/main.tsx       — Page to report lost item
+	  - find-item/main.tsx		   — Page to find all listed items
+	- components/
+	  - header.tsx  	   — Header component
 
-- Allow users to upload photos of found items. The backend will automatically:
-	- detect the object (e.g., "backpack", "phone", "wallet") using YOLO,
-	- generate a concise title and descriptive text using a vision-language model,
-	- store the item with metadata (location, photo, generated caption, detection confidence).
-- A front-end UI where people can browse recent items (maybe), search by category, and mark items as claimed/found.
-- When an item is claimed, it should be removed or marked as claimed in the database.
+- README.md                — This file
+-------------------------------------------------
 
-What this repository contains now
----------------------------------
+How to run (backend + frontend) and try the site
+------------------------------------------------
+Requirements:
+- Python 3.10–3.13, Node 16+ (or the version in frontend/package.json)
+- Optional: NVIDIA GPU + CUDA for much faster model startup and inference
 
-- `backend/` — FastAPI backend code, YOLO detector, model loader, and database bindings.
-- `backend/yolov8n.pt` — YOLO weights used for local object detection.
-- `requirements.txt` — Python dependencies used by the project.
-
-Requirements
-------------
-
-- Python 3.13.9 or lower (don't use 3.14!!)
-- Create and activate a virtual environment, then install dependencies:
-
-```powershell
-python -m venv venv
-venv\Scripts\Activate
-pip install -r requirements.txt
-```
-
-Copy the Repo:
-```
-git clone https://github.com/JimWid/Lost-And-Found.git
-```
-
-Run the backend (quick try)
----------------------------
-
-Start the FastAPI app:
-First go to backend folder:
+1. Open backend:
 ```powershell
 cd backend
-uvicorn backend.main:app --reload --port 8000
+python -m venv venv
+.\venv\Scripts\Activate
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
 ```
-***make sure to add to the url "/docs", for example "http://127.0.0.1:8000/docs"***
+2. (Optional) Open API docs to exercise endpoints: http://127.0.0.1:8000/docs
 
-Endpoints you can try now
+Run the frontend
+1. Open a new shell and from repo root:
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+2. Open the frontend: http://127.0.0.1:3000
+
+Notes on models & startup
+------------------------
+- Models (BLIP-2 and YOLO weights) are large. Initial server start will be slow while models load (minutes on CPU).
+- A NVIDIA GPU dramatically speeds startup and inference. On CPU-only machines expect much longer delays and higher memory usage.
+
+Endpoints on FastAPI
 -------------------------
 
-- POST /create-lost-item — upload an image to create a lost-item entry.
+- POST /upload
+  - Purpose: accept a multipart/form-data image upload and save it to backend/uploads; returns filename.
 
-- GET /lost-items/{item_id} — retrieve a saved item by id:
+- POST /analyze-image
+  - Purpose: provide a saved filename (returned by /upload) to run YOLO detection + BLIP captioning; returns title, description, detected category, objectName, confidence and a filename or file_url.
 
-Next steps (just listed for planning)
-----------------------------------------------------------------
+- POST /create-lost-item
+  - Purpose: create a DB entry for a lost item (title, description, category, foundLocation, filename). Payload follows CreateLostItem schema.
+  
+- GET /lost-items
+  - Purpose: list lost items. Optional query params:
+    - category — filter by category name
+    - since — ISO datetime to filter items added after the timestamp
 
-- Design the front end (React/Next.js) and wire up UI flows to the backend endpoints.
-- Implement delete or "mark as claimed" behavior to remove or flag lost items when they are returned.
-- Connect the backend to the front end (file uploads, authentication???, and API wiring).
-- Improve persistence and migrations (review SQLAlchemy models and add Alembic migrations if needed). (We could keep it local)
+- GET /lost-items/{item_id}
+  - Purpose: retrieve a single lost item by numeric id.
+
+- DELETE /delete-lost-item/{item_id}
+  - Purpose: remove an item from the DB (e.g., when claimed/found (not implemented yet)).
+
+Downsides / Caveats
+-------------------
+- Slow startup: loading BLIP-2 and YOLO on CPU can take several minutes; memory heavy.
+- Better with NVIDIA GPU and proper CUDA drivers.
+- Persistence: DB and model state are local.
+
+
+## Future plans
+
+- Optimization plan:
+  - Probably change to a smaller BLIP variants to reduce memory and startup time.
+  - Probably add model quantization to lower inference cost and latency.
+
+
 
 
 

@@ -10,9 +10,8 @@ class LostItem(Base):
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
     category = Column(String, nullable=False)
-    foundLocation = Column(String, nullable=True)
+    foundLocation = Column(String, nullable=False)
+    filename = Column(String, nullable=True)
     addedAt = Column(DateTime, default=datetime.now())
-    confidence = Column(Float, nullable=True)
-    objectName = Column(String, nullable=True)
 
 Base.metadata.create_all(bind=engine)
