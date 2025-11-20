@@ -2,13 +2,13 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Body, Que
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
 import io
 import os
 from sqlalchemy.orm import Session
 
-from main_model import processor, model, device
+from qwen_model import create_description, create_title, normalize_caption
 from db import get_db
 from models import LostItem
 from schemas import CreateLostItem  
@@ -18,6 +18,8 @@ from categories import get_category_from_detection
 
 from uuid import uuid4
 import uvicorn
+
+from qwen_vl_utils import process_vision_info
 
 app = FastAPI()
 
@@ -50,34 +52,14 @@ async def create_upload_file(file: UploadFile = File(...)):
         "filename": filename,
         }
 
-
-def generate_captions(image):
+def generate_captions(image: Image.Image):
 
     # Generates Captions (title and description)
-    if processor is None or model is None:
-        title = "(model not available)"
-        description = "The captioning model is not loaded on the server. Configure and load the BLIP2 model to enable automatic captions."
-    else:
-        inputs = processor(images=image, return_tensors="pt").to(device)
+    title = create_title(image)
+    description = create_description(image)
 
-        generated_title = model.generate(
-            **inputs, 
-            max_new_tokens=3, # Generates up to 3 tokens
-            min_new_tokens=2, # At least 2 tokens
-            num_beams=2,
-            length_penalty=1.0
-        )
-
-        generated_description = model.generate(
-            **inputs, 
-            max_new_tokens=30, # Generates up to 50 tokens
-            min_new_tokens=15, # At least 30 tokens
-            num_beams=5,
-            length_penalty=1.2
-        )
-        
-        title = processor.decode(generated_title[0], skip_special_tokens=True)
-        description = processor.decode(generated_description[0], skip_special_tokens=True)
+    title = normalize_caption(title)
+    description = normalize_caption(description)
 
     return title, description   
 
@@ -99,7 +81,7 @@ async def analyze_image_by_filename(payload: dict = Body(...)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Cannot open image: {e}")
 
-    # Run your detector & captioner (same logic you used before)
+    # Running detector & captioner
     detection_result = detect_object(image)
     if detection_result["detected"]:
         category = get_category_from_detection(detection_result["class_name"], detection_result["confidence"])

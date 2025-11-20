@@ -26,7 +26,7 @@ CATEGORY_MAPPING = {
     "Other": []
 }
 
-def get_category_from_detection(class_name: str, confidence: float, threshold: float = 0.65) -> str:
+def get_category_from_detection(class_name: str, confidence: float, threshold: float = 0.45) -> str:
 
     # If confidence is too low, return Other
     if confidence < threshold:

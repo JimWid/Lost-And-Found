@@ -1,10 +1,9 @@
 from ultralytics import YOLO
 from PIL import Image
-import torch
 
 yolo_model = YOLO('yolov8n.pt')
 
-def detect_object(image: Image.Image, confidence_threshol: float = 0.65):
+def detect_object(image: Image.Image, confidence_threshold: float = 0.40):
 
     results = yolo_model(image, verbose=False)
 
@@ -13,7 +12,7 @@ def detect_object(image: Image.Image, confidence_threshol: float = 0.65):
         boxes = result.boxes
         for box in boxes:
             confidence = float(box.conf[0])
-            if confidence >= confidence_threshol:
+            if confidence >= confidence_threshold:
                 class_id = int(box.cls[0])
                 class_name = result.names[class_id]
                 detections.append({
