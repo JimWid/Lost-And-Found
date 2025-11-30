@@ -9,6 +9,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Ignore Lost Items database
+backend/lost_items.db
+
 # Runtime uploads / generated files
 backend/uploads/
 uploads/
