@@ -5,7 +5,9 @@ Short summary
 This repository contains full stack website (backend + frontend) for a "Lost & Found" website that helps list items found around campus/university. The backend uses YOLO for object detection and a vision-language model (BLIP) to auto-generate short titles and descriptions from item photos. Uploaded items are stored in the database with metadata (location, filename, generated captions (title + description), id) and can be listed, retrieved, or deleted.
 **Click here to see it in action!** (https://www.youtube.com/watch?v=YZbugWGhxXA)
 
-What this repository contains now (file structure)
+### Change Branch to using-Qwen2 to use Qwen2 model instead of Blip2! for a better and more faster generation of text!
+
+**File Structure:**
 ```
 lost-and-found/
 │
