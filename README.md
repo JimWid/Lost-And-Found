@@ -3,7 +3,8 @@
 Short summary
 ---------------
 **This is the same project but instead of using Blip2, we are using Qwen2, which is a most modern model, and faster. Follow the same instructions to use**
-**Just to make a comparetion, Blip2 takes around ~10 minutes in generation captions in CPU, while Qwen2 takes ~3 mins, a major improvement!!**
+
+**Just to make a comparation, Blip2 takes around ~10 minutes in generation captions in CPU, while Qwen2 takes ~3 mins, a major improvement!!**
 **Click here to see it in action!** (https://www.youtube.com/watch?v=YZbugWGhxXA)
 
 What this repository contains now (file structure)
