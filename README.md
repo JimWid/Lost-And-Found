@@ -6,26 +6,39 @@ This repository contains full stack website (backend + frontend) for a "Lost & F
 **Click here to see it in action!** (https://www.youtube.com/watch?v=YZbugWGhxXA)
 
 What this repository contains now (file structure)
--------------------------------------------------
-- backend/
-  - main.py                — FastAPI app and endpoints
-  - main_model.py          — model & processor loader (BLIP-2) and device setup
-  - yolo_detector.py       — YOLO wrapper for local detection
-  - models.py              — SQLAlchemy model(s) (LostItem)
-  - schemas.py             — Pydantic schemas (CreateLostItem)
-  - db.py                  — DB session helper (get_db)
-  - requirements.txt       — Python dependencies
-- frontend/            	   — Next/js app
-  - src/
-  	- app/
-	  - main.tsx		   		   — Main page / Hero page
-	  - report-item/main.tsx       — Page to report lost item
-	  - find-item/main.tsx		   — Page to find all listed items
-	- components/
-	  - header.tsx  	   — Header component
-
-- README.md                — This file
--------------------------------------------------
+```
+lost-and-found/
+│
+├── backend/
+│   ├── uploads/				# This folder will be created at the moment of uploading an image
+│	│
+│   ├── __init__.py				
+│	├── categories.py			# Categories for detection
+│   ├── db.py           		# Database
+│   ├── main_model.py        	# Loads BLIP-2 model
+│   ├── main.py       			# Main FastAPI
+│   ├── models.py              	# SQLAlchemy models
+│   ├── schemas.py             	# Pydantic schemas
+│   ├── yolo_detector.py        # Loads YOLOv8 model
+│	├── yolov8n.pt				# This will be created at the first run of backend
+│	├── lost_items.db			# This will be created at the first run of backend (lost items local database)
+│	└── requirements.txt		# Requirements
+│
+├── frontend/
+│	│
+│	├── public/	# Stores public assets/images
+│	│
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── page.tsx             	# Main landing page
+│   │   │   ├── find-item/page.tsx   	# List all lost items page
+│   │   │   └── report-item/page.tsx    # Report lost item page
+│   │   │
+│   │   └── components/
+│   │	  	└── Header.tsx
+├── .gitignore	
+└── README.md
+```
 
 How to run (backend + frontend) and try the site
 ------------------------------------------------
@@ -87,11 +100,21 @@ Downsides / Caveats
 - Persistence: DB and model state are local.
 
 
-## Future plans
+## Future plans (DONE)
+**Optimization plan:**
+Probably change to a smaller BLIP variants to reduce memory and startup time:
+There is a new version using Qwen2, where caption generation is half the time with Blip2!
+- **Click on Branch and change it to Using-Qwen2 and follow the same instructions to use!** 
 
-- Optimization plan:
-  - Probably change to a smaller BLIP variants to reduce memory and startup time.
-  - Probably add model quantization to lower inference cost and latency.
+## Images:
+## Main Page:
+<img width="1911" height="927" alt="Screenshot 2025-11-29 203926" src="https://github.com/user-attachments/assets/3c3b87c1-c7d3-4ca1-b62f-a56979545f2c" />
+
+## Report Item Page:
+<img width="1914" height="924" alt="Screenshot 2025-11-29 204640" src="https://github.com/user-attachments/assets/b240cad3-eb36-448a-a878-764f93e50925" />
+
+## Find Lost Items Page:
+<img width="1914" height="925" alt="Screenshot 2025-11-29 204849" src="https://github.com/user-attachments/assets/5e1ac9c9-bd96-4900-8eee-8fac34e5e7ca" />
 
 
 

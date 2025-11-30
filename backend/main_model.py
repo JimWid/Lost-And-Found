@@ -8,8 +8,6 @@ model = None
 
 processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b", use_fast=True)
 model = Blip2ForConditionalGeneration.from_pretrained(
-	"Salesforce/blip2-opt-2.7b",
-	dtype=torch.float16 if device == "cuda" else torch.float32,
-	)
+	"Salesforce/blip2-opt-2.7b", torch_dtype=torch.float16 if device == "cuda" else torch.float32)
 
 model.to(device)
